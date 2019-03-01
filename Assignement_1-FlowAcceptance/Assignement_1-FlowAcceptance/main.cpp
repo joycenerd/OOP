@@ -19,6 +19,7 @@ double cost[N][N];
 
 typedef struct{
     int acceptID;
+    int pathLenth;
     int flowPath[N];
 }ACCEPTPATH;
 ACCEPTPATH accept[N];
@@ -30,13 +31,17 @@ void CheckandUpdate(int flowID,int path[],int tail,int flowSize){
     for(i=1;i<=tail;i++){
         to=path[i];
         if(link[from][to]-flowSize<0) return;
+        from=to;
     }
     accept[acceptFlows].acceptID=flowID;
     from=accept[acceptFlows].flowPath[0]=path[0];
+    accept[acceptFlows].pathLenth=tail;
     for(i=1;i<=tail;i++){
         to=accept[acceptFlows].flowPath[i]=path[i];
         link[from][to]-=flowSize;
-        cost[from][to]=(double)flowSize/link[from][to];
+        if(link[from][to]==0) cost[from][to]=MAX_COST;
+        else cost[from][to]=(double)flowSize/link[from][to];
+        from=to;
     }
     throughPut+=flowSize;
     acceptFlows++;
@@ -63,7 +68,10 @@ int choose(int dist[],int nodes,int visit[]){
 void ShortestPath(int nodes,int flowID,int sourceID,int destinationID, int flowSize){
     int visit[N]={0};
     int dist[N],path[N][N]={0},tail[N];
-    int i;
+    int i,j;
+    for(i=0;i<N;i++){
+        for(j=0;j<N;j++) path[i][j]=0;
+    }
     for(i=0;i<nodes;i++) tail[i]=-1;
     for(i=0;i<nodes;i++){
         dist[i]=cost[sourceID][i];
@@ -76,6 +84,7 @@ void ShortestPath(int nodes,int flowID,int sourceID,int destinationID, int flowS
     visit[sourceID]=1;
     for(i=0;i<nodes-2;i++){
         int next=choose(dist,nodes,visit);
+        if(next==-1) break;
         visit[next]=1;
         for(int u=0;u<nodes;u++){
             if(!visit[u] && dist[next]+cost[next][u]<dist[u]){
@@ -86,6 +95,7 @@ void ShortestPath(int nodes,int flowID,int sourceID,int destinationID, int flowS
             }
         }
     }
+    if(tail[destinationID]==-1) return;
     CheckandUpdate(flowID,path[destinationID],tail[destinationID],flowSize);
 }
 
@@ -111,6 +121,14 @@ int main()
     while(requestFlows--){
         fin >> flowID >> sourceID >> destinationID >> flowSize;
         ShortestPath(nodes,flowID,sourceID,destinationID,flowSize);
+    }
+    fout << acceptFlows << " " << throughPut << endl;
+    for(i=0;i<acceptFlows;i++){
+        fout << accept[i].acceptID;
+        for(j=0;j<=accept[i].pathLenth;j++){
+            if(j==accept[i].pathLenth) fout << " " <<accept[i].flowPath[j] << endl;
+            else fout << " " << accept[i].flowPath[j];
+        }
     }
     return 0;
 }
