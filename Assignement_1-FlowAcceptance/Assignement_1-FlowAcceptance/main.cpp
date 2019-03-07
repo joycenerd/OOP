@@ -11,12 +11,14 @@
 #include <fstream>
 #define N 200
 #define MAX_COST 100000
+#define MIN_COST 0.0001
 using namespace std;
 
 
 int link[N][N];
 double cost[N][N];
 
+// store accept flow information
 typedef struct{
     int acceptID;
     int pathLenth;
@@ -25,23 +27,28 @@ typedef struct{
 ACCEPTPATH accept[N];
 int acceptFlows=0,throughPut=0;
 
+// check load and capacity, add flow, update cost
 void CheckandUpdate(int flowID,int path[],int tail,int flowSize){
-    int from,to,i;
-    from=path[0];
+    int start,end,i;
+    start=path[0];
+    // check if load>capacity
     for(i=1;i<=tail;i++){
-        to=path[i];
-        if(link[from][to]-flowSize<0) return;
-        from=to;
+        end=path[i];
+        if(link[start][end]-flowSize<0) return;
+        start=end;
     }
+    // accept flow
     accept[acceptFlows].acceptID=flowID;
-    from=accept[acceptFlows].flowPath[0]=path[0];
+    start=accept[acceptFlows].flowPath[0]=path[0];
     accept[acceptFlows].pathLenth=tail;
     for(i=1;i<=tail;i++){
-        to=accept[acceptFlows].flowPath[i]=path[i];
-        link[from][to]-=flowSize;
-        if(link[from][to]==0) cost[from][to]=MAX_COST;
-        else cost[from][to]=(double)flowSize/link[from][to];
-        from=to;
+        end=accept[acceptFlows].flowPath[i]=path[i];
+        link[start][end]-=flowSize;
+        link[end][start]-=flowSize;
+        // update cost
+        if(link[start][end]==0) cost[start][end]=cost[end][start]=MAX_COST;
+        else cost[start][end]=cost[end][start]=(double)flowSize/link[start][end];
+        start=end;
     }
     throughPut+=flowSize;
     acceptFlows++;
@@ -53,6 +60,7 @@ int CopyList(int from[],int to[],int tail,int end){
     return *to;
 }
 
+// choose smallest edge cost
 int choose(int dist[],int nodes,int visit[]){
     int mini=MAX_COST;
     int index=-1;
@@ -65,6 +73,7 @@ int choose(int dist[],int nodes,int visit[]){
     return index;
 }
 
+// find shortest path for each request
 void ShortestPath(int nodes,int flowID,int sourceID,int destinationID, int flowSize){
     int visit[N]={0};
     int dist[N],path[N][N]={0},tail[N];
@@ -73,6 +82,7 @@ void ShortestPath(int nodes,int flowID,int sourceID,int destinationID, int flowS
         for(j=0;j<N;j++) path[i][j]=0;
     }
     for(i=0;i<nodes;i++) tail[i]=-1;
+    // initialize distance form source to every other nodes
     for(i=0;i<nodes;i++){
         dist[i]=cost[sourceID][i];
         if(dist[i]<MAX_COST){
@@ -82,10 +92,12 @@ void ShortestPath(int nodes,int flowID,int sourceID,int destinationID, int flowS
         }
     }
     visit[sourceID]=1;
+    // find shortest path
     for(i=0;i<nodes-2;i++){
-        int next=choose(dist,nodes,visit);
+        int next=choose(dist,nodes,visit);  // choose node with smallest edge cost
         if(next==-1) break;
         visit[next]=1;
+        // update shortest path in every iteration
         for(int u=0;u<nodes;u++){
             if(!visit[u] && dist[next]+cost[next][u]<dist[u]){
                 dist[u]=dist[next]+cost[next][u];
@@ -95,28 +107,32 @@ void ShortestPath(int nodes,int flowID,int sourceID,int destinationID, int flowS
             }
         }
     }
-    if(tail[destinationID]==-1) return;
+    if(tail[destinationID]==-1) return; // no shortest path
+    // if find shortest path update cost and add flow
     CheckandUpdate(flowID,path[destinationID],tail[destinationID],flowSize);
 }
 
 
 int main()
 {
-    int nodes,directedLinks,linkID,firstNode,secondNode,linkCapacity;
+    int nodes,undirectedLinks,linkID,firstNode,secondNode,linkCapacity;
     int requestFlows,flowID,sourceID,destinationID,flowSize;
     ifstream fin;
     ofstream fout;
+    fin.open("request_2.txt");
     fout.open("result.txt");
-    fin.open("request.txt");
-    fin >> nodes >> directedLinks;
+    // input flow graph
+    fin >> nodes >> undirectedLinks;
     int i,j;
     for(i=0;i<N;i++){
         for(j=0;j<N;j++) cost[i][j]=MAX_COST;
     }
-    while(directedLinks--){
+    while(undirectedLinks--){
         fin >> linkID >> firstNode >> secondNode >> linkCapacity;
-        link[firstNode][secondNode]=cost[firstNode][secondNode]=linkCapacity;
+        link[firstNode][secondNode]=link[secondNode][firstNode]=linkCapacity;
+        cost[firstNode][secondNode]=cost[secondNode][firstNode]=MIN_COST;
     }
+    // input request
     fin >> requestFlows;
     while(requestFlows--){
         fin >> flowID >> sourceID >> destinationID >> flowSize;

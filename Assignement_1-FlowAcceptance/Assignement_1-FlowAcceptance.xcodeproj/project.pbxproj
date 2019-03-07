@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6138A55822276C50005A6D4F /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6138A55722276C50005A6D4F /* main.cpp */; };
+		614F7EE32230B37300DB502E /* makefile in Sources */ = {isa = PBXBuildFile; fileRef = 614F7EE22230B37300DB502E /* makefile */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +27,8 @@
 		6138A55422276C50005A6D4F /* Assignement_1-FlowAcceptance */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Assignement_1-FlowAcceptance"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6138A55722276C50005A6D4F /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		6138A55E22276C7A005A6D4F /* request.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = request.txt; path = ../../../request.txt; sourceTree = "<group>"; };
+		614F7EE12230B23100DB502E /* request_2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = request_2.txt; sourceTree = "<group>"; };
+		614F7EE22230B37300DB502E /* makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = makefile; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,7 +62,9 @@
 			isa = PBXGroup;
 			children = (
 				6138A55E22276C7A005A6D4F /* request.txt */,
+				614F7EE12230B23100DB502E /* request_2.txt */,
 				6138A55722276C50005A6D4F /* main.cpp */,
+				614F7EE22230B37300DB502E /* makefile */,
 			);
 			path = "Assignement_1-FlowAcceptance";
 			sourceTree = "<group>";
@@ -120,6 +125,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				614F7EE32230B37300DB502E /* makefile in Sources */,
 				6138A55822276C50005A6D4F /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
