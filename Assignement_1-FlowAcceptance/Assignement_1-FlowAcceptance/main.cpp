@@ -73,7 +73,7 @@ int choose(int dist[],int nodes,int visit[]){
     return index;
 }
 
-// find shortest path for each request
+// find shortest using Dijkstra algorithm
 void ShortestPath(int nodes,int flowID,int sourceID,int destinationID, int flowSize){
     int visit[N]={0};
     int dist[N],path[N][N]={0},tail[N];
