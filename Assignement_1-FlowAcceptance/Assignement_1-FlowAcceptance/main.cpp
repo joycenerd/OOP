@@ -16,6 +16,7 @@ using namespace std;
 
 
 int link[N][N];
+int load[N][N];
 double cost[N][N];
 
 // store accept flow information
@@ -34,7 +35,7 @@ void CheckandUpdate(int flowID,int path[],int tail,int flowSize){
     // check if load>capacity
     for(i=1;i<=tail;i++){
         end=path[i];
-        if(link[start][end]-flowSize<0) return;
+        if(link[start][end]-load[start][end]-flowSize<0) return;
         start=end;
     }
     // accept flow
@@ -43,11 +44,11 @@ void CheckandUpdate(int flowID,int path[],int tail,int flowSize){
     accept[acceptFlows].pathLenth=tail;
     for(i=1;i<=tail;i++){
         end=accept[acceptFlows].flowPath[i]=path[i];
-        link[start][end]-=flowSize;
-        link[end][start]-=flowSize;
+        load[start][end]+=flowSize;
+        load[end][start]+=flowSize;
         // update cost
-        if(link[start][end]==0) cost[start][end]=cost[end][start]=MAX_COST;
-        else cost[start][end]=cost[end][start]=(double)flowSize/link[start][end];
+        if(link[start][end]-load[start][end]==0) cost[start][end]=cost[end][start]=MAX_COST;
+        else cost[start][end]=cost[end][start]=(double)load[start][end]/(link[start][end]-load[start][end]);
         start=end;
     }
     throughPut+=flowSize;
@@ -126,6 +127,9 @@ int main()
     int i,j;
     for(i=0;i<N;i++){
         for(j=0;j<N;j++) cost[i][j]=MAX_COST;
+    }
+    for(i=0;i<N;i++){
+        for(j=0;j<N;j++) load[i][j]=0;
     }
     while(undirectedLinks--){
         fin >> linkID >> firstNode >> secondNode >> linkCapacity;
