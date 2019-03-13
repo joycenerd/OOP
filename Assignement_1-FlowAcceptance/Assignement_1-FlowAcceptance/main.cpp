@@ -9,9 +9,11 @@
 #include <iostream>
 #include <cstdio>
 #include <fstream>
+#include <cstdlib>
+#include <cstring>
 #define N 200
 #define MAX_COST 100000
-#define MIN_COST 0.0001
+#define MIN_COST 0.01
 using namespace std;
 
 
@@ -62,8 +64,8 @@ int CopyList(int from[],int to[],int tail,int end){
 }
 
 // choose smallest edge cost
-int choose(int dist[],int nodes,int visit[]){
-    int mini=MAX_COST;
+int choose(double dist[],int nodes,int visit[]){
+    double mini=MAX_COST;
     int index=-1;
     for(int i=0;i<nodes;i++){
         if(!visit[i] && dist[i]<mini){
@@ -77,7 +79,8 @@ int choose(int dist[],int nodes,int visit[]){
 // find shortest using Dijkstra algorithm
 void ShortestPath(int nodes,int flowID,int sourceID,int destinationID, int flowSize){
     int visit[N]={0};
-    int dist[N],path[N][N]={0},tail[N];
+    int path[N][N]={0},tail[N];
+    double dist[N];
     int i,j;
     for(i=0;i<N;i++){
         for(j=0;j<N;j++) path[i][j]=0;
@@ -96,7 +99,7 @@ void ShortestPath(int nodes,int flowID,int sourceID,int destinationID, int flowS
     // find shortest path
     for(i=0;i<nodes-2;i++){
         int next=choose(dist,nodes,visit);  // choose node with smallest edge cost
-        if(next==-1) break;
+        //if(next==-1) break;
         visit[next]=1;
         // update shortest path in every iteration
         for(int u=0;u<nodes;u++){
@@ -120,7 +123,7 @@ int main()
     int requestFlows,flowID,sourceID,destinationID,flowSize;
     ifstream fin;
     ofstream fout;
-    fin.open("request_2.txt");
+    fin.open("demo_request.txt");
     fout.open("result.txt");
     // input flow graph
     fin >> nodes >> undirectedLinks;
