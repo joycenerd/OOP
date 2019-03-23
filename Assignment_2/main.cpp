@@ -41,12 +41,13 @@ int main()
     while(edges--){
         fscanf(fin,"%d %d %d\n",&edgeId,&requestId,&resourceId);
         yn=v_resource[resourceId]->*requestId;
-        if(yn) doMatching(requestId);
+        if(!yn) v_resource[resourceId].doMatching(requestId);
     }
     for(i=0;i<v_resource.size();i++){
         yn=v_resource[i].checkMatched();
         if(!yn){
             isAlloc=v_resource[i].allocateResource();
+            if(isAlloc)
         }
     }
   }

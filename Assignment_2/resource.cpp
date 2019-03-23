@@ -19,7 +19,7 @@ bool cmp(matchList a,matchList b){
     return a>b;
 }
 
-bool operator ->*(const Resource&,const Request& request){
+bool operator ->*(const Resource &resource,const Request& request){
     bool isMatched=request.checkMatched();
     if(isMatched) return false;
     return true;
