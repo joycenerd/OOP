@@ -21,7 +21,7 @@ int main()
   vector<Resource> v_resource;
   Request request;
   Resource resource;
-  bool yn,check;
+  bool yn,isAlloc;
 
   // read data from file
   fscanf(fin, "%d", &timeSlots);
@@ -40,6 +40,15 @@ int main()
     fscanf(fin,"%d",&edges);
     while(edges--){
         fscanf(fin,"%d %d %d\n",&edgeId,&requestId,&resourceId);
+        yn=v_resource[resourceId]->*requestId;
+        if(yn) doMatching(requestId);
+    }
+    for(i=0;i<v_resource.size();i++){
+        yn=v_resource[i].checkMatched();
+        if(!yn){
+            isAlloc=v_resource[i].allocateResource();
+        }
     }
   }
+
 }
