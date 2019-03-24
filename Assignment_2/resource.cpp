@@ -1,51 +1,56 @@
-#include <iostream>
-#include <cstdio>
-#include <cstdlib>
-#include <vector>
-#include <algorithm>
 #include "resource.h"
 #include "request.h"
+#include <algorithm>
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <vector>
 using namespace std;
 
 using namespace std;
 
-Resource::Resource(int id):id(id),matched(false){
+// constructor: resourceId,not match
+Resource::Resource(int inputId) : id(inputId), matched(false) {}
 
+// check is request is assigned or not
+bool operator ->*(const Resource &resource, const Request &request) {
+  bool isMatched = request.checkMatched();
+  if (isMatched)
+    return false;
+  return true;
 }
 
-bool cmp(matchList a,matchList b){
-    double value_a=a.getWeight();
-    double value_b=b.getWeight();
-    return a>b;
-}
+// add request into matching list
+void Resource::doMatching(Request request) { matchList.push_back(request); }
 
-bool operator ->*(const Resource &resource,const Request& request){
-    bool isMatched=request.checkMatched();
-    if(isMatched) return false;
+// check if resource is allocated
+bool Resource::checkMatched() {
+  if (matched)
     return true;
+  return false;
 }
 
-void Resource::doMatching(Request request){
-    matchList.push_back(request);
+// sort request in resource matching list by its weight
+bool cmp(Request& a, Request& b) {
+  double value_a = a.getWeight();
+  double value_b = b.getWeight();
+  return value_a > value_b;
 }
 
-bool Resource::checkMatched(){
-    if(matched) return true;
-    return false;
+void Resource::doSorting() { 
+    sort(matchList.begin(), matchList.end(), cmp);
 }
 
-void Resource::doSorting(){
-    sort(matchList.begin(),matchList.end(),cmp);
-}
-
-bool Resource::allocateResource(){
-    bool isMatched;
-    for(int i=0;i<matchList.size();i++){
-        isMatched=matchList[i].checkMatched();
-        if(isMatched) continue;
-        matched=true;
-        requestId=matchList[i].getId();
-        return true;
-    }
-    return false;
+// assigned request to resource
+int Resource::allocateResource() {
+  bool isMatched;
+  for (int i = 0; i < matchList.size(); i++) {
+    isMatched = matchList[i].checkMatched();
+    if (isMatched)
+      continue;
+    matched = true;
+    requestId = matchList[i].getId();
+    return requestId;
+  }
+  return -1;
 }

@@ -1,31 +1,47 @@
+#include "request.h"
 #include <cstdio>
 #include <cstdlib>
 #include <random>
-#include "request.h"
 using namespace std;
 
-
-default_random_engine generator(1);
-uniform_real_distribution<double> uniform(0.0,1.0);
-int Request::counter=0;
+int Request::counter = 0;
+default_random_engine generator(2);
+uniform_real_distribution<double> uniform(0.0, 1.0);
 
 // Constructor of Request
-Request::Request(int id):id(id),bool(false)
-{
-    double w=uniform(generator);
-    weight=w;
+Request::Request(int inputId) : id(inputId), matched(false) {
+  double w = uniform(generator);
+  //printf("%f ",w);
+  weight = w;
 }
 
-bool Request::checkMatched(){
-    if(matched) return true;
-    return false;
+// if request is matched
+bool Request::checkMatched() const{
+  if (matched)
+    return true;
+  return false;
 }
 
-double Request::getWeight(){
-    return weight;
+// get the weight of the request
+double Request::getWeight() { return weight; }
+
+// get requestId
+int Request::getId() { return id; }
+
+// count satisfied request
+int Request::getCounter() {
+  counter++;
+  return counter;
 }
 
-int Request::getId(){
-    return id;
+// assigned resource to request
+void Request::matchResource(int resource) {
+  matched = true;
+  resourceId = resource;
 }
 
+// print satisfied resourceId and requestId
+void Request::printResult() {
+  if (matched)
+    printf("%d %d\n", id, resourceId);
+}

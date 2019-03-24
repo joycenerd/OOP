@@ -1,21 +1,27 @@
+#ifndef REQUEST_H
+#define REQUEST_H
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
 using namespace std;
 
-class Request {
+class Request{
 public:
-  Request(int inputId);
-  bool checkMatched();
+  explicit Request(int inputId);
+  double getRandom();
+  bool checkMatched() const;
   double getWeight();
   int getId();
   static int getCounter();
-  void matchResource();
+  void matchResource(int resource);
+  void printResult();
 
 private:
-    int id;
-    double weight;
-    bool matched;
-    int resourceId;
-    static int counter;
+  int id;
+  double weight;
+  bool matched;
+  int resourceId;
+  static int counter;
 };
+
+#endif
