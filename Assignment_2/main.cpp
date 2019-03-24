@@ -9,6 +9,7 @@ using namespace std;
 
 int main() {
   FILE *fin = fopen("./request.txt", "r");
+  FILE *fout=fopen("./result.txt","w");
   int timeSlots = 0, timeSlotID = 0, requestNum = 0, resourceNum = 0;
   int requestId = 0, resourceId = 0;
   int edges = 0, edgeId = 0;
@@ -56,10 +57,12 @@ int main() {
       }
     }
   }
- 
+    fclose(fin);
+
     // print out result
-  printf("%d\n", satisfiedRequests);
+  fprintf(fout,"%d\n", satisfiedRequests);
   for (i = 0; i < v_request.size(); i++)
-    v_request[i].printResult();
+    v_request[i].printResult(fout);
+fclose(fout);
   return 0;
 }

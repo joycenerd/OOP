@@ -41,7 +41,7 @@ void Request::matchResource(int resource) {
 }
 
 // print satisfied resourceId and requestId
-void Request::printResult() {
+void Request::printResult(FILE *fout) {
   if (matched)
-    printf("%d %d\n", id, resourceId);
+    fprintf(fout,"%d %d\n", id, resourceId);
 }

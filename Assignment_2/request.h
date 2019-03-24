@@ -14,7 +14,7 @@ public:
   int getId();
   static int getCounter();
   void matchResource(int resource);
-  void printResult();
+  void printResult(FILE *fout);
 
 private:
   int id;
