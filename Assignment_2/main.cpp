@@ -7,8 +7,8 @@
 #define MAX_SIZE 1000
 using namespace std;
 
-int main() {
-  FILE *fin = fopen("./request.txt", "r");
+int main(int argc,char *argv[]) {
+  FILE *fin = fopen(argv[1], "r");
   FILE *fout=fopen("./result.txt","w");
   int timeSlots = 0, timeSlotID = 0, requestNum = 0, resourceNum = 0;
   int requestId = 0, resourceId = 0;
@@ -18,6 +18,8 @@ int main() {
   vector<Request> v_request;
   vector<Resource> v_resource;
   bool yn, isAlloc;
+  v_request.reserve(1010);
+  v_resource.reserve(1010);
 
   // read request and resource
   fscanf(fin, "%d", &timeSlots);
