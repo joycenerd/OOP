@@ -54,12 +54,16 @@ int main(int argc,char *argv[]) {
         requestId = v_resource[i].allocateResource();
         if (requestId != -1) {
           v_request[requestId].matchResource(i);
-          satisfiedRequests = v_request[requestId].getCounter();
         }
       }
     }
   }
-    fclose(fin);
+  fclose(fin);
+
+  for (i = 0; i < v_request.size(); i++){
+    yn=v_request[i].checkMatched();
+    if(yn) satisfiedRequests=Request::getCounter();
+  }
 
     // print out result
   fprintf(fout,"%d\n", satisfiedRequests);

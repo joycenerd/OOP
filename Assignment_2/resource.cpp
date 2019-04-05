@@ -46,8 +46,7 @@ int Resource::allocateResource() {
   bool isMatched;
   for (int i = 0; i < matchList.size(); i++) {
     isMatched = matchList[i].checkMatched();
-    if (isMatched)
-      continue;
+    if (isMatched) return -1;
     matched = true;
     requestId = matchList[i].getId();
     return requestId;
