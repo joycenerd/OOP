@@ -4,7 +4,6 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
-#define MAX_SIZE 1000
 using namespace std;
 
 int main(int argc,char *argv[]) {
