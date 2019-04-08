@@ -6,9 +6,9 @@
 #include <vector>
 using namespace std;
 
-int main(int argc,char *argv[]) {
+int main(int argc, char *argv[]) {
   FILE *fin = fopen(argv[1], "r");
-  FILE *fout=fopen("./result.txt","w");
+  FILE *fout = fopen("./result.txt", "w");
   int timeSlots = 0, timeSlotID = 0, requestNum = 0, resourceNum = 0;
   int requestId = 0, resourceId = 0;
   int edges = 0, edgeId = 0;
@@ -19,6 +19,7 @@ int main(int argc,char *argv[]) {
   bool yn, isAlloc;
   v_request.reserve(1010);
   v_resource.reserve(1010);
+  v_request.clear();
 
   // read request and resource
   fscanf(fin, "%d", &timeSlots);
@@ -29,6 +30,7 @@ int main(int argc,char *argv[]) {
       Request request(requestId);
       v_request.push_back(request);
     }
+    v_resource.clear();
     while (resourceNum--) {
       fscanf(fin, "%d", &resourceId);
       Resource resource(resourceId);
@@ -41,12 +43,14 @@ int main(int argc,char *argv[]) {
       fscanf(fin, "%d %d %d\n", &edgeId, &requestId, &resourceId);
       // find resource matching list
       yn = v_resource[resourceId]->*v_request[requestId];
-      if (yn)
-        v_resource[resourceId].doMatching(v_request[requestId]);
+      if(yn){
+        int reject=v_resource[resourceId].getReject();
+        if(reject!=-1) v_request[reject].reassign();
+      }
     }
-    
+
     // match resource to request
-    for (i = 0; i < v_resource.size(); i++) {
+    /*for (i = 0; i < v_resource.size(); i++) {
       yn = v_resource[i].checkMatched();
       if (!yn) {
         v_resource[i].doSorting();
@@ -68,6 +72,7 @@ int main(int argc,char *argv[]) {
   fprintf(fout,"%d\n", satisfiedRequests);
   for (i = 0; i < v_request.size(); i++)
     v_request[i].printResult(fout);
-fclose(fout);
+fclose(fout);*/
+  }
   return 0;
 }

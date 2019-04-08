@@ -10,18 +10,26 @@ using namespace std;
 using namespace std;
 
 // constructor: resourceId,not match
-Resource::Resource(int inputId) : id(inputId), matched(false) {}
+Resource::Resource(int inputId) : id(inputId), matched(false){}
 
 // check is request is assigned or not
-bool operator ->*(const Resource &resource, const Request &request) {
+bool operator ->*(Resource &resource, Request &request) {
   bool isMatched = request.checkMatched();
   if (isMatched)
     return false;
-  return true;
+  if(resource.maxWeight<request.getWeight()){
+    if(resource.maxWeight!=-1) resource.rejectId=resource.maxId;
+    resource.maxId=request.getId();
+    resource.maxWeight=request.getWeight();
+    resource.matched=true;
+    resource.requestId=resource.maxId;
+    return true;
+  }
+  return false;    
 }
 
 // add request into matching list
-void Resource::doMatching(Request request) { matchList.push_back(request); }
+//void Resource::doMatching(Request request) { matchList.push_back(request); }
 
 // check if resource is allocated
 bool Resource::checkMatched() {
@@ -37,12 +45,12 @@ bool cmp(Request& a, Request& b) {
   return value_a > value_b;
 }
 
-void Resource::doSorting() { 
-    sort(matchList.begin(), matchList.end(), cmp);
-}
+//void Resource::doSorting() { 
+   // sort(matchList.begin(), matchList.end(), cmp);
+//}
 
 // assigned request to resource
-int Resource::allocateResource() {
+/*int Resource::allocateResource() {
   bool isMatched;
   for (int i = 0; i < matchList.size(); i++) {
     isMatched = matchList[i].checkMatched();
@@ -52,4 +60,4 @@ int Resource::allocateResource() {
     return requestId;
   }
   return -1;
-}
+}*/

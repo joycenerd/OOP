@@ -7,7 +7,7 @@ all: $(TARGET) clean
 $(TARGET):$(OBJECTS)
 	$(CC) -o $(TARGET) $(OBJECTS)
 $(OBJECTS):$(SOURCES)
-	$(CC) -c $(SOURCES)
+	$(CC) -std=c++11 -c $(SOURCES)
 
 clean:
 	rm -rf $(OBJECTS)

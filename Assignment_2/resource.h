@@ -11,18 +11,20 @@ class Resource {
 
 public:
   explicit Resource(int inputId);
-  friend bool operator->*(const Resource &resource, const Request &request);
-  void doMatching(Request request);
+  friend bool operator->*(Resource &resource, Request &request);
+  //void doMatching(Request request);
   bool checkMatched();
-  void doSorting();
-  int allocateResource();
+  //void doSorting();
+  int getReject(){return rejectId;};
   friend class Request;
 
 private:
   int id;
   bool matched;
   int requestId;
-  vector<Request> matchList;
+  int maxId;
+  double maxWeight=-1;
+  int rejectId=-1;
 };
 
 #endif
