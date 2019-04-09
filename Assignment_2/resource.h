@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
+#include <queue>
 using namespace std;
 
 class Resource {
@@ -14,9 +15,9 @@ public:
   friend bool operator->*(Resource &resource, Request &request);
   //void doMatching(Request request);
   bool checkMatched();
-  //void doSorting();
-  int getReject(){return rejectId;};
   friend class Request;
+  int assign(vector<Request> v_request);
+  int getId(){return id;};
 
 private:
   int id;
@@ -25,6 +26,7 @@ private:
   int maxId;
   double maxWeight=-1;
   int rejectId=-1;
+  vector<pair<int,int>> matchList;
 };
 
 #endif

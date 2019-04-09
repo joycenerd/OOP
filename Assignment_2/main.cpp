@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
   FILE *fout = fopen("./result.txt", "w");
   int timeSlots = 0, timeSlotID = 0, requestNum = 0, resourceNum = 0;
   int requestId = 0, resourceId = 0;
-  int edges = 0, edgeId = 0;
+  int edges = 0, edgeId = 0,cnt=0;
   static int satisfiedRequests;
   int i = 0;
   vector<Request> v_request;
@@ -27,52 +27,37 @@ int main(int argc, char *argv[]) {
     fscanf(fin, "%d %d %d", &timeSlotID, &requestNum, &resourceNum);
     while (requestNum--) {
       fscanf(fin, "%d", &requestId);
+      //printf("%d ",requestId);
       Request request(requestId);
       v_request.push_back(request);
     }
-    v_resource.clear();
-    while (resourceNum--) {
+    //printf("\n");
+    for(i=0;i<resourceNum;i++) {
       fscanf(fin, "%d", &resourceId);
+      //printf("%d ",resourceId);
       Resource resource(resourceId);
       v_resource.push_back(resource);
     }
-
+    //printf("\n");
     // input edges
     fscanf(fin, "%d", &edges);
-    while (edges--) {
+    for(i=0;i<edges;i++) {
       fscanf(fin, "%d %d %d\n", &edgeId, &requestId, &resourceId);
-      // find resource matching list
-      yn = v_resource[resourceId]->*v_request[requestId];
-      if(yn){
-        int reject=v_resource[resourceId].getReject();
-        if(reject!=-1) v_request[reject].reassign();
+      yn=v_resource[resourceId]->*v_request[requestId];
+    }
+    for(i=cnt;i<v_resource.size();i++){
+      requestId=v_resource[i].assign(v_request);
+      if(requestId!=-1){
+        resourceId=v_resource[i].getId();
+        v_request[requestId].assign(resourceId);
+        satisfiedRequests=Request::getCounter();
       }
     }
-
-    // match resource to request
-    /*for (i = 0; i < v_resource.size(); i++) {
-      yn = v_resource[i].checkMatched();
-      if (!yn) {
-        v_resource[i].doSorting();
-        requestId = v_resource[i].allocateResource();
-        if (requestId != -1) {
-          v_request[requestId].matchResource(i);
-        }
-      }
-    }
+    cnt+=resourceNum;
   }
-  fclose(fin);
-
-  for (i = 0; i < v_request.size(); i++){
-    yn=v_request[i].checkMatched();
-    if(yn) satisfiedRequests=Request::getCounter();
-  }
-
-    // print out result
-  fprintf(fout,"%d\n", satisfiedRequests);
-  for (i = 0; i < v_request.size(); i++)
-    v_request[i].printResult(fout);
-fclose(fout);*/
+  fprintf(fout,"%d\n",satisfiedRequests);
+  for(i=0;i<v_request.size();i++){
+    v_request[i].output(fout);
   }
   return 0;
 }

@@ -13,9 +13,8 @@ public:
   double getWeight();
   int getId();
   static int getCounter();
-  void reassign(){matched=false;};
-  void matchResource(int resource);
-  void printResult(FILE *fout);
+  void output(FILE *fout);
+  void assign(int matchId);
 
 private:
   int id;

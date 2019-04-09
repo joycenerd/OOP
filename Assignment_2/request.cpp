@@ -34,14 +34,12 @@ int Request::getCounter() {
   return counter;
 }
 
-// assigned resource to request
-void Request::matchResource(int resource) {
-  matched = true;
-  resourceId = resource;
+void Request::assign(int matchId){
+  resourceId=matchId;
+  matched=true;
 }
 
-// print satisfied resourceId and requestId
-void Request::printResult(FILE *fout) {
-  if (matched)
-    fprintf(fout,"%d %d\n", id, resourceId);
+void Request::output(FILE *fout){
+  if(!matched) return;
+  fprintf(fout,"%d %d\n",id,resourceId);
 }
