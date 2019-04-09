@@ -23,9 +23,6 @@ private:
   int id;
   bool matched;
   int requestId;
-  int maxId;
-  double maxWeight=-1;
-  int rejectId=-1;
   vector<pair<int,int>> matchList;
 };
 

@@ -27,24 +27,21 @@ int main(int argc, char *argv[]) {
     fscanf(fin, "%d %d %d", &timeSlotID, &requestNum, &resourceNum);
     while (requestNum--) {
       fscanf(fin, "%d", &requestId);
-      //printf("%d ",requestId);
       Request request(requestId);
       v_request.push_back(request);
     }
-    //printf("\n");
     for(i=0;i<resourceNum;i++) {
       fscanf(fin, "%d", &resourceId);
-      //printf("%d ",resourceId);
       Resource resource(resourceId);
       v_resource.push_back(resource);
     }
-    //printf("\n");
-    // input edges
+    // input edges and check if can match
     fscanf(fin, "%d", &edges);
     for(i=0;i<edges;i++) {
       fscanf(fin, "%d %d %d\n", &edgeId, &requestId, &resourceId);
       yn=v_resource[resourceId]->*v_request[requestId];
     }
+    // match resource and request every timeslots
     for(i=cnt;i<v_resource.size();i++){
       requestId=v_resource[i].assign(v_request);
       if(requestId!=-1){
@@ -55,6 +52,7 @@ int main(int argc, char *argv[]) {
     }
     cnt+=resourceNum;
   }
+  // output result
   fprintf(fout,"%d\n",satisfiedRequests);
   for(i=0;i<v_request.size();i++){
     v_request[i].output(fout);

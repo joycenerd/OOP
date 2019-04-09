@@ -11,7 +11,6 @@ uniform_real_distribution<double> uniform(0.0, 1.0);
 // Constructor of Request
 Request::Request(int inputId) : id(inputId), matched(false) {
   double w = uniform(generator);
-  //printf("%f ",w);
   weight = w;
 }
 
@@ -34,11 +33,13 @@ int Request::getCounter() {
   return counter;
 }
 
+// assign request to resource
 void Request::assign(int matchId){
   resourceId=matchId;
   matched=true;
 }
 
+// output request resource pair if request is assigned
 void Request::output(FILE *fout){
   if(!matched) return;
   fprintf(fout,"%d %d\n",id,resourceId);

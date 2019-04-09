@@ -12,7 +12,7 @@ using namespace std;
 // constructor: resourceId,not match
 Resource::Resource(int inputId) : id(inputId), matched(false){}
 
-// check is request is assigned or not
+// add request to matchlist if not assigned
 bool operator ->*(Resource &resource, Request &request) { 
   bool isMatch=request.checkMatched();
   if(isMatch) return false;
@@ -28,10 +28,12 @@ bool Resource::checkMatched() {
   return false;
 }
 
+// compare function of sorting matching list
 bool cmpBySec(const pair<int,double> &a,const pair<int,double> &b){
   return a.second<b.second;
 }
 
+// match resource to request
 int Resource::assign(vector<Request> v_request){
   sort(matchList.begin(),matchList.end(),cmpBySec);
   while(!matchList.empty()){
