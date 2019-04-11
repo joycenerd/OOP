@@ -23,7 +23,7 @@ private:
   int id;
   bool matched;
   int requestId;
-  vector<pair<int,int>> matchList;
+  vector<pair<int,double>> matchList;
 };
 
 #endif
