@@ -57,15 +57,14 @@ void faceRouting(vector<Node> &v_nodes,int vsize,int srcId,int dstId){
     for(i=0;i<vsize;i++) v_nodes[i].addDst(dstId,dstX,dstY);
     itxX=v_nodes[srcId].getX();
     itxY=v_nodes[srcId].getY();
-    slope=calcSlope(v_nodes[srcId],v_nodes[dstId]);
-    Packet packet(srcId,dstId,itxX,itxY,slope);
+    Packet packet(srcId,dstId,itxX,itxY);
     v_nodes[srcId].initPkt(packet);
    while(1){
        for(i=0;i<vsize;i++){
            isMine=v_nodes[i].checkQueue(0);
            if(isMine!=-1) curId=isMine;
        }
-       v_nodes[curId].getNextHop();
+       v_nodes[curId].getNextHop(v_nodes);
        break;
    }
 }

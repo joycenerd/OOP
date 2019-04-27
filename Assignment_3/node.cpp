@@ -72,15 +72,21 @@ bool sortBySec(const pair<int,double> &a,const pair<int,double> &b){
     return a.second<b.second;
 }
 
-void Node::getNextHop(){
+double lineFunc(double curX,double curY,double lastX,double lastY){
+    double slope;
+    slope=(lastY-curY)/(lastX-curX);
+    return slope;
+}
+
+void Node::getNextHop(vector<Node> &v_nodes){
     Packet packet;
-    double itxX,itxY,slope,side,neighborX,neighborY,degree;
+    double itxX,itxY,slope,side,neighborX,neighborY,degree,lastX,lastY;
     vector<pair<int,double>> angle;
-    int i,vsize,neighborId,dstId;
+    int i,vsize,neighborId,dstId,lastId;
     packet=q_pkt.front();
     itxX=packet.getItxX();
     itxY=packet.getItxY();
-    slope=packet.getSlope();
+    slope=lineFunc(x,y,dstX,dstY);
     vsize=planarGraph.size();
     if(x==itxX && y==itxY){
         for(i=0;i<vsize;i++){
@@ -97,5 +103,16 @@ void Node::getNextHop(){
         packet.modifyInfo(id,angle[0].first);
         q_pkt.push(packet);
         return;
+    }
+    lastId=packet.getLastId();
+    lastX=v_nodes[lastId].x;
+    lastY=v_nodes[lastId].y;
+    while(1){
+        for(i=0;i<vsize;i++){
+            neighborId=planarGraph[i].id;
+            neighborX=planarGraph[i].x;
+            neighborY=planarGraph[i].y;
+            slope=
+        }
     }
 }
