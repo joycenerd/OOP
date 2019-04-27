@@ -3,6 +3,7 @@
 #include <vector>
 #include <cmath>
 #include <cstdio>
+#include <algorithm>
 using namespace std;
 
 
@@ -37,31 +38,62 @@ void Node::planarize(){
     }
 }
 
-int Node::checkQueue(){
+void Node::addDst(int inDstId,double inDstX,double inDstY){
+    dstId=inDstId;
+    dstX=inDstX;
+    dstY=inDstY;
+}
+
+int Node::checkQueue(int mode){
     Packet packet;
     int nextId;
     if(q_pkt.empty()) return -1;
     packet=q_pkt.front();
     nextId=packet.getNxtId();
+    if(mode==1) printf("%d\n",nextId);
     if(nextId==id) return id;
     q_pkt.pop();
     return -1;
 }
 
-Node calcSmallestAngle(vector<Node> &planarGraph,double x,double y){
-    
+double calcSmallestAngle(double curX,double curY,double prevX,double prevY,double nxtX,double nxtY){
+    double aX,aY,bX,bY,aAbs,bAbs,degree;
+    aX=prevX-curX;
+    aY=prevY-curY;
+    bX=nxtX-curX;
+    bY=nxtY-curY;
+    aAbs=sqrt(aX*aX+aY*aY);
+    bAbs=sqrt(bX*bX+bY*bY);
+    degree=acos((aX*bX+aY*bY)/(aAbs*bAbs));
+    return degree;
 }
 
+bool sortBySec(const pair<int,double> &a,const pair<int,double> &b){
+    return a.second<b.second;
+}
 
-
-void Node::getNextHop(){
+int Node::getNextHop(){
     Packet packet;
-    double itxX,itxY;
+    double itxX,itxY,slope,side,neighborX,neighborY,degree;
     vector<pair<int,double>> angle;
+    int i,vsize,neighborId,dstId;
     packet=q_pkt.front();
     itxX=packet.getItxX();
     itxY=packet.getItxY();
+    slope=packet.getSlope();
+    vsize=planarGraph.size();
     if(x==itxX && y==itxY){
-
+        for(i=0;i<vsize;i++){
+            neighborId=planarGraph[i].id;
+            neighborX=planarGraph[i].x;
+            neighborY=planarGraph[i].y;
+            side=slope*(neighborX-x)-(neighborY-y);
+            degree=calcSmallestAngle(x,y,dstX,dstY,neighborX,neighborY);
+            if((side>=0 && dstX>x) || (side<=0 && dstX<x)) angle.push_back(make_pair(neighborId,degree));
+            else angle.push_back(make_pair(neighborId,2*M_PI-degree));
+        }
+        sort(angle.begin(),angle.end(),sortBySec);
+        return angle[0].first;
     }
+    return 0;
 }

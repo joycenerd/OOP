@@ -18,14 +18,18 @@ class Node{
         void pushNeighbor(Node node){beforeNeighbor.push_back(node);};
         void printNeighbor();
         void planarize();
+        void addDst(int inDstId,double inDstX,double inDstY);
         void initPkt(Packet packet){q_pkt.push(packet);};
-        int checkQueue();
-        void getNextHop();
+        int checkQueue(int mode);
+        int getNextHop();
 
     private:
         int id;
         double x;
         double y;
+        int dstId;
+        double dstX;
+        double dstY;
         vector<Node> beforeNeighbor;
         vector<Node> planarGraph;
         queue<Packet> q_pkt;

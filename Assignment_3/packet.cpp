@@ -7,5 +7,4 @@ Packet::Packet(int inSrc,int inDst,double inItxX,double inItxY,double inSlope){
     itxX=inItxX;
     itxY=inItxY;
     slope=inSlope;
-    printf("%f\n",slope);
 }

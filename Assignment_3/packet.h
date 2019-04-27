@@ -11,6 +11,9 @@ class Packet{
         int getNxtId(){return nextId;};
         double getItxX(){return itxX;};
         double getItxY(){return itxY;};
+        double getSlope(){return slope;};
+        int getDstId(){return dstId;};
+        void goNxt(int id){nextId=id;};
             
     private:
         int srcId;
