@@ -36,3 +36,32 @@ void Node::planarize(){
         if(yn) planarGraph.push_back(beforeNeighbor[i]);
     }
 }
+
+int Node::checkQueue(){
+    Packet packet;
+    int nextId;
+    if(q_pkt.empty()) return -1;
+    packet=q_pkt.front();
+    nextId=packet.getNxtId();
+    if(nextId==id) return id;
+    q_pkt.pop();
+    return -1;
+}
+
+Node calcSmallestAngle(vector<Node> &planarGraph,double x,double y){
+    
+}
+
+
+
+void Node::getNextHop(){
+    Packet packet;
+    double itxX,itxY;
+    vector<pair<int,double>> angle;
+    packet=q_pkt.front();
+    itxX=packet.getItxX();
+    itxY=packet.getItxY();
+    if(x==itxX && y==itxY){
+
+    }
+}

@@ -1,6 +1,6 @@
 CC=g++
-SOURCES=main.cpp node.cpp
-OBJECTS=main.o node.o
+SOURCES=main.cpp node.cpp packet.cpp
+OBJECTS=main.o node.o packet.o
 TARGET=assignment_3
 
 all: $(TARGET) clean

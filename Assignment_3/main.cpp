@@ -1,4 +1,5 @@
 #include "node.h"
+#include "packet.h"
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
@@ -37,12 +38,39 @@ void addNeighbor(vector<Node> &v_nodes,int vsize){
         }
     }
 }
+double calcSlope(Node source,Node destination){
+    double srcX,srcY,dstX,dstY,slope;
+    srcX=source.getX();
+    srcY=source.getY();
+    dstX=destination.getX();
+    dstY=destination.getY();
+    slope=(dstY-srcY)/(dstX-srcX);
+    return slope;
+}
+
+
+void faceRouting(vector<Node> &v_nodes,int vsize,int srcId,int dstId){
+    double itxX,itxY,slope;
+    int i,curId,isMine;
+    itxX=v_nodes[srcId].getX();
+    itxY=v_nodes[srcId].getY();
+    slope=calcSlope(v_nodes[srcId],v_nodes[dstId]);
+    Packet packet(srcId,dstId,itxX,itxY,slope);
+    v_nodes[srcId].initPkt(packet);
+   while(1){
+       for(i=0;i<vsize;i++){
+           isMine=v_nodes[i].checkQueue();
+           if(isMine!=-1) curId=isMine;
+       }
+       v_nodes[curId].getNextHop();
+   }
+}
 
 
 int main(int argc, char **argv)
 {
     FILE *fin=fopen(argv[1],"r");
-    int numOfNodes=0,id,i,vsize;
+    int numOfNodes=0,id,i,vsize,pairs,srcId,dstId;
     double x,y;
     vector<Node> v_nodes;
     v_nodes.reserve(1010);
@@ -50,5 +78,9 @@ int main(int argc, char **argv)
     vsize=v_nodes.size();
     addNeighbor(v_nodes,vsize);
     for(i=0;i<vsize;i++) v_nodes[i].planarize();
-    for(i=0;i<vsize;i++) v_nodes[i].printNeighbor();
+    fscanf(fin,"%d",&pairs);
+    for(i=0;i<pairs;i++){
+        fscanf(fin,"%d %d",&srcId,&dstId);
+        faceRouting(v_nodes,vsize,srcId,dstId);
+    }
 }
