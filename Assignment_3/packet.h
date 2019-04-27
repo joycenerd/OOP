@@ -13,7 +13,7 @@ class Packet{
         double getItxY(){return itxY;};
         double getSlope(){return slope;};
         int getDstId(){return dstId;};
-        void goNxt(int id){nextId=id;};
+        void modifyInfo(int cur,int nexts);
             
     private:
         int srcId;

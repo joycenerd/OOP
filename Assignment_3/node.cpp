@@ -72,7 +72,7 @@ bool sortBySec(const pair<int,double> &a,const pair<int,double> &b){
     return a.second<b.second;
 }
 
-int Node::getNextHop(){
+void Node::getNextHop(){
     Packet packet;
     double itxX,itxY,slope,side,neighborX,neighborY,degree;
     vector<pair<int,double>> angle;
@@ -93,7 +93,9 @@ int Node::getNextHop(){
             else angle.push_back(make_pair(neighborId,2*M_PI-degree));
         }
         sort(angle.begin(),angle.end(),sortBySec);
-        return angle[0].first;
+        q_pkt.pop();
+        packet.modifyInfo(id,angle[0].first);
+        q_pkt.push(packet);
+        return;
     }
-    return 0;
 }

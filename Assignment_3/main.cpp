@@ -65,9 +65,7 @@ void faceRouting(vector<Node> &v_nodes,int vsize,int srcId,int dstId){
            isMine=v_nodes[i].checkQueue(0);
            if(isMine!=-1) curId=isMine;
        }
-       int nxtId=v_nodes[curId].getNextHop();
-       packet.goNxt(nxtId);
-       printf("%d\n",packet.getNxtId());
+       v_nodes[curId].getNextHop();
        break;
    }
 }

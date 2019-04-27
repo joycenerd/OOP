@@ -8,3 +8,8 @@ Packet::Packet(int inSrc,int inDst,double inItxX,double inItxY,double inSlope){
     itxY=inItxY;
     slope=inSlope;
 }
+
+void Packet::modifyInfo(int cur,int nexts){
+    lastId=cur;
+    nextId=nexts;
+}
