@@ -15,12 +15,14 @@ class Node{
         int getId(){return id;};
         double getX(){return x;};
         double getY(){return y;};
+        double getDstX(){return dstX;};
+        double getDstY(){return dstY;};
         void pushNeighbor(Node node){beforeNeighbor.push_back(node);};
         void printNeighbor();
         void planarize();
         void addDst(int inDstId,double inDstX,double inDstY);
         void initPkt(Packet packet){q_pkt.push(packet);};
-        int checkQueue(int mode);
+        int checkQueue();
         void getNextHop(vector<Node> &v_nodes,int plSide);
         void send(vector<Node> &v_nodes);
 
