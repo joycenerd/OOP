@@ -12,3 +12,8 @@ void Packet::modifyInfo(int cur,int nexts){
     lastId=cur;
     nextId=nexts;
 }
+
+void Packet::updateItx(double newX,double newY){
+    itxX=newX;
+    itxY=newY;
+}

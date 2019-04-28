@@ -53,7 +53,9 @@ int Node::checkQueue(int mode){
     packet=q_pkt.front();
     nextId=packet.getNxtId();
     if(mode==1) printf("%d\n",nextId);
-    if(nextId==id) return id;
+    if(nextId==id){
+        return id;
+    }
     q_pkt.pop();
     return -1;
 }
@@ -83,19 +85,26 @@ double lineFunc(double curX,double curY,double lastX,double lastY){
 void getNewItx(double slope1,double x1,double y1,double slope2,double x2,double y2,double &newItxX,double &newitxY){
     newItxX=(-slope2*x2+y2+slope1*x1-y1)/(slope1-slope2);
     newitxY=slope1*(newItxX-x1)+y1;
+    //printf("%f %f\n",newItxX,newitxY);
 }
 
-void Node::getNextHop(vector<Node> &v_nodes){
+//double findSide(double side,int plSide, double degree){
+ //   if((side<=0 && plSide==1) || (side>=0 && plSide==-1))
+//}
+
+void Node::getNextHop(vector<Node> &v_nodes,int plSide){
     Packet packet;
     double itxX,itxY,slope,side,neighborX,neighborY,degree,lastX,lastY,sdSlope;
     double curSide,neighborSide,isSame,newItxX,newItxY;
     vector<pair<int,double>> angle;
-    int i,vsize,neighborId,dstId,lastId;
+    int i,vsize,neighborId,dstId,lastId,srcId;
     int vis[1010];
+    printf("%d\n",id);
     packet=q_pkt.front();
     itxX=packet.getItxX();
     itxY=packet.getItxY();
-    sdSlope=lineFunc(x,y,dstX,dstY);
+    srcId=packet.getSrcId();
+    sdSlope=lineFunc(v_nodes[srcId].getX(),v_nodes[srcId].getY(),dstX,dstY);
     vsize=planarGraph.size();
     if(x==itxX && y==itxY){
         for(i=0;i<vsize;i++){
@@ -104,10 +113,11 @@ void Node::getNextHop(vector<Node> &v_nodes){
             neighborY=planarGraph[i].y;
             side=sdSlope*(neighborX-x)-(neighborY-y);
             degree=calcSmallestAngle(x,y,dstX,dstY,neighborX,neighborY);
-            if((side>=0 && dstX>x) || (side<=0 && dstX<x)) angle.push_back(make_pair(neighborId,degree));
+            if((side>=0 && plSide==1) || (side<=0 && plSide==-1)) angle.push_back(make_pair(neighborId,degree));
             else angle.push_back(make_pair(neighborId,2*M_PI-degree));
         }
         sort(angle.begin(),angle.end(),sortBySec);
+        for(i=0;i<angle.size();i++) printf("%d %f\n",angle[i].first,angle[i].second);
         q_pkt.pop();
         packet.modifyInfo(id,angle[0].first);
         q_pkt.push(packet);
@@ -116,8 +126,9 @@ void Node::getNextHop(vector<Node> &v_nodes){
     lastId=packet.getLastId();
     lastX=v_nodes[lastId].x;
     lastY=v_nodes[lastId].y;
-    memset(vis,0,sizeof(vis));
+    for(i=0;i<1010;i++) vis[i]=0;
     while(1){
+        //printf("yes\n");
         slope=lineFunc(x,y,lastX,lastY);
         for(i=0;i<vsize;i++){
             neighborId=planarGraph[i].id;
@@ -125,17 +136,22 @@ void Node::getNextHop(vector<Node> &v_nodes){
             neighborY=planarGraph[i].y;
             side=slope*(neighborX-x)-(neighborY-y);
             degree=calcSmallestAngle(x,y,lastX,lastY,neighborX,neighborY);
-            if((side>=0 && dstX>x) || side<=0 && dstX<x) angle.push_back(make_pair(neighborId,degree));
-            else angle.push_back(make_pair(neighborId,2*M_PI-degree)); 
+            if(neighborId==lastId) angle.push_back(make_pair(neighborId,2*M_PI));
+            else if((side<=0 && plSide==1) || (side>=0 && plSide==-1)) angle.push_back(make_pair(neighborId,degree));
+            else angle.push_back(make_pair(neighborId,degree)); 
         }
         sort(angle.begin(),angle.end(),sortBySec);
-        neighborId=angle[0].first;
+        for(i=0;i<angle.size();i++) printf("%d %f\n",angle[i].first,angle[i].second);
+        for(i=0;i<vsize;i++){
+            neighborId=angle[i].first;
+            if(vis[neighborId]==0) break;
+        }
         neighborX=v_nodes[neighborId].x;
         neighborY=v_nodes[neighborId].y;
         curSide=sdSlope*(x-dstX)-(y-dstY);
         neighborSide=sdSlope*(neighborX-dstX)-(neighborY-dstY);
         isSame=curSide*neighborSide;
-        if(isSame>=0){
+        if(isSame>=0 || neighborSide>=0){
              q_pkt.pop();
              packet.modifyInfo(id,neighborId);
             q_pkt.push(packet);
@@ -149,6 +165,24 @@ void Node::getNextHop(vector<Node> &v_nodes){
             q_pkt.push(packet);
             return;
         }
-        
+        packet.updateItx(newItxX,newItxY);
+        lastX=newItxX;
+        lastY=newItxY;
+        //printf("%f %f\n",lastX,lastY);
+        vis[neighborId]=1;
+    }
+    angle.clear();
+}
+
+void Node::send(vector<Node> &v_nodes){
+    int vsize,i,neighborId;
+    Packet packet;
+    vsize=beforeNeighbor.size();
+    packet=v_nodes[id].q_pkt.front();
+    //printf("%d ",packet.getLastId());
+    v_nodes[id].q_pkt.pop();
+    for(i=0;i<vsize;i++){
+        neighborId=beforeNeighbor[i].getId();
+        v_nodes[neighborId].q_pkt.push(packet);
     }
 }

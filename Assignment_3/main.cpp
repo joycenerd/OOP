@@ -48,25 +48,35 @@ double calcSlope(Node source,Node destination){
     return slope;
 }
 
-
-void faceRouting(vector<Node> &v_nodes,int vsize,int srcId,int dstId){
-    double itxX,itxY,slope,dstX,dstY;
-    int i,curId,isMine;
+void faceRouting(vector<Node> v_nodes,int vsize,int srcId,int dstId){
+    double itxX,itxY,slope,dstX,dstY,srcX;
+    int i,curId,isMine,plSide;
     dstX=v_nodes[dstId].getX();
     dstY=v_nodes[dstId].getY();
+    srcX=v_nodes[srcId].getX();
     for(i=0;i<vsize;i++) v_nodes[i].addDst(dstId,dstX,dstY);
     itxX=v_nodes[srcId].getX();
     itxY=v_nodes[srcId].getY();
     Packet packet(srcId,dstId,itxX,itxY);
     v_nodes[srcId].initPkt(packet);
+    int cnt=0;
+    if(srcX<dstX) plSide=1;
+    else plSide=-1;
    while(1){
+       //printf("yes\n");
        for(i=0;i<vsize;i++){
            isMine=v_nodes[i].checkQueue(0);
-           if(isMine!=-1) curId=isMine;
+           if(isMine!=-1){
+               curId=isMine;
+           }
        }
-       v_nodes[curId].getNextHop(v_nodes);
-       break;
+       printf("%d ",curId);
+       if(curId==dstId) break;
+       v_nodes[curId].getNextHop(v_nodes,plSide);
+       v_nodes[curId].send(v_nodes);
+       printf("\n");
    }
+   //printf("\n");
 }
 
 
