@@ -4,6 +4,8 @@
 #include <cmath>
 #include <cstdio>
 #include <algorithm>
+#include <cstdlib>
+#include <cstring>
 using namespace std;
 
 
@@ -78,22 +80,29 @@ double lineFunc(double curX,double curY,double lastX,double lastY){
     return slope;
 }
 
+void getNewItx(double slope1,double x1,double y1,double slope2,double x2,double y2,double &newItxX,double &newitxY){
+    newItxX=(-slope2*x2+y2+slope1*x1-y1)/(slope1-slope2);
+    newitxY=slope1*(newItxX-x1)+y1;
+}
+
 void Node::getNextHop(vector<Node> &v_nodes){
     Packet packet;
-    double itxX,itxY,slope,side,neighborX,neighborY,degree,lastX,lastY;
+    double itxX,itxY,slope,side,neighborX,neighborY,degree,lastX,lastY,sdSlope;
+    double curSide,neighborSide,isSame,newItxX,newItxY;
     vector<pair<int,double>> angle;
     int i,vsize,neighborId,dstId,lastId;
+    int vis[1010];
     packet=q_pkt.front();
     itxX=packet.getItxX();
     itxY=packet.getItxY();
-    slope=lineFunc(x,y,dstX,dstY);
+    sdSlope=lineFunc(x,y,dstX,dstY);
     vsize=planarGraph.size();
     if(x==itxX && y==itxY){
         for(i=0;i<vsize;i++){
             neighborId=planarGraph[i].id;
             neighborX=planarGraph[i].x;
             neighborY=planarGraph[i].y;
-            side=slope*(neighborX-x)-(neighborY-y);
+            side=sdSlope*(neighborX-x)-(neighborY-y);
             degree=calcSmallestAngle(x,y,dstX,dstY,neighborX,neighborY);
             if((side>=0 && dstX>x) || (side<=0 && dstX<x)) angle.push_back(make_pair(neighborId,degree));
             else angle.push_back(make_pair(neighborId,2*M_PI-degree));
@@ -107,12 +116,39 @@ void Node::getNextHop(vector<Node> &v_nodes){
     lastId=packet.getLastId();
     lastX=v_nodes[lastId].x;
     lastY=v_nodes[lastId].y;
+    memset(vis,0,sizeof(vis));
     while(1){
+        slope=lineFunc(x,y,lastX,lastY);
         for(i=0;i<vsize;i++){
             neighborId=planarGraph[i].id;
             neighborX=planarGraph[i].x;
             neighborY=planarGraph[i].y;
-            slope=
+            side=slope*(neighborX-x)-(neighborY-y);
+            degree=calcSmallestAngle(x,y,lastX,lastY,neighborX,neighborY);
+            if((side>=0 && dstX>x) || side<=0 && dstX<x) angle.push_back(make_pair(neighborId,degree));
+            else angle.push_back(make_pair(neighborId,2*M_PI-degree)); 
         }
+        sort(angle.begin(),angle.end(),sortBySec);
+        neighborId=angle[0].first;
+        neighborX=v_nodes[neighborId].x;
+        neighborY=v_nodes[neighborId].y;
+        curSide=sdSlope*(x-dstX)-(y-dstY);
+        neighborSide=sdSlope*(neighborX-dstX)-(neighborY-dstY);
+        isSame=curSide*neighborSide;
+        if(isSame>=0){
+             q_pkt.pop();
+             packet.modifyInfo(id,neighborId);
+            q_pkt.push(packet);
+            return;
+        }
+        slope=lineFunc(neighborX,neighborY,x,y);
+        getNewItx(sdSlope,dstX,dstY,slope,x,y,newItxX,newItxY);
+        if((dstX>x && newItxX<=itxX && newItxY<=itxY) || (dstX<x && newItxX>=itxX && newItxY>=itxY)){
+            q_pkt.pop();
+             packet.modifyInfo(id,neighborId);
+            q_pkt.push(packet);
+            return;
+        }
+        
     }
 }
