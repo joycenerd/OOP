@@ -211,6 +211,7 @@ void Node::getNextHop(vector<Node> &v_nodes,int plSide){
     angle.clear();
 }
 
+// send packet
 void Node::send(vector<Node> &v_nodes){
     int vsize,i,neighborId;
     Packet packet;
