@@ -116,12 +116,41 @@ void equalToItxCase(vector<Node> &planarGraph,double slope,Node node,Packet &pac
     packet.modifyInfo(node.getId(),angle[0].first);
 }
 
+// other case: first find the node with smallest angle differnece form current node
+int getSmallestAngle(vector<Node> &planarGraph,double lastX,double lastY,Node node,Packet &packet,int plSide,int vis[]){
+    double slope,neighborX,neighborY,side,degree,x,y;
+    int neighborId,vsize,i,lastId;
+    vector<pair<int,double>> angle;
+    angle.clear();
+    vsize=planarGraph.size();
+    x=node.getX();
+    y=node.getY();
+    lastId=packet.getLastId();
+    for(i=0;i<vsize;i++){
+        neighborId=planarGraph[i].getId();
+        neighborX=planarGraph[i].getX();
+        neighborY=planarGraph[i].getY();
+        side=slope*(neighborX-x)-(neighborY-y);
+        degree=arcCos(x,y,lastX,lastY,neighborX,neighborY);
+        if(neighborId==lastId) angle.push_back(make_pair(neighborId,2*M_PI));
+        else if((side<=0 && plSide==1) || (side>=0 && plSide==-1)) angle.push_back(make_pair(neighborId,degree));
+        else angle.push_back(make_pair(neighborId,degree)); 
+    }
+    sort(angle.begin(),angle.end(),sortBySec);
+    for(i=0;i<angle.size();i++) printf("%d %f\n",angle[i].first,angle[i].second);
+    for(i=0;i<vsize;i++){
+        neighborId=angle[i].first;
+        if(vis[neighborId]==0) break;
+    }
+    return neighborId;
+}
+
 void Node::getNextHop(vector<Node> &v_nodes,int plSide){
     Packet packet;
-    double itxX,itxY,slope,side,neighborX,neighborY,degree,lastX,lastY,sdSlope;
+    double itxX,itxY,slope,neighborX,neighborY,lastX,lastY,sdSlope;
     double curSide,neighborSide,isSame,newItxX,newItxY;
     vector<pair<int,double>> angle;
-    int i,vsize,neighborId,dstId,lastId,srcId;
+    int i,neighborId,lastId,srcId;
     int vis[1010];
     printf("%d\n",id);
     packet=q_pkt.front();
@@ -130,7 +159,6 @@ void Node::getNextHop(vector<Node> &v_nodes,int plSide){
     srcId=packet.getSrcId();
     // get source-destination function
     sdSlope=lineFunc(v_nodes[srcId],dstX,dstY);
-    vsize=planarGraph.size();
     if(x==itxX && y==itxY){
         equalToItxCase(planarGraph,sdSlope,v_nodes[id],packet,plSide);
         q_pkt.pop();
@@ -143,37 +171,31 @@ void Node::getNextHop(vector<Node> &v_nodes,int plSide){
     for(i=0;i<1010;i++) vis[i]=0;
     while(1){
         // find samllest angle
-        slope=lineFunc(v_nodes[id],lastX,lastY);
-        for(i=0;i<vsize;i++){
-            neighborId=planarGraph[i].id;
-            neighborX=planarGraph[i].x;
-            neighborY=planarGraph[i].y;
-            side=slope*(neighborX-x)-(neighborY-y);
-            degree=arcCos(x,y,lastX,lastY,neighborX,neighborY);
-            if(neighborId==lastId) angle.push_back(make_pair(neighborId,2*M_PI));
-            else if((side<=0 && plSide==1) || (side>=0 && plSide==-1)) angle.push_back(make_pair(neighborId,degree));
-            else angle.push_back(make_pair(neighborId,degree)); 
-        }
-        sort(angle.begin(),angle.end(),sortBySec);
-        for(i=0;i<angle.size();i++) printf("%d %f\n",angle[i].first,angle[i].second);
-        for(i=0;i<vsize;i++){
-            neighborId=angle[i].first;
-            if(vis[neighborId]==0) break;
-        }
-        //
+        neighborId=getSmallestAngle(planarGraph,lastX,lastY,v_nodes[id],packet,plSide,vis);
         neighborX=v_nodes[neighborId].x;
         neighborY=v_nodes[neighborId].y;
         curSide=sdSlope*(x-dstX)-(y-dstY);
         neighborSide=sdSlope*(neighborX-dstX)-(neighborY-dstY);
         isSame=curSide*neighborSide;
-        if(isSame>=0 || neighborSide>=0){
+        // case 2: if neighbor and current node is on the same side
+        if(isSame>=0){
              q_pkt.pop();
              packet.modifyInfo(id,neighborId);
             q_pkt.push(packet);
             return;
         }
+        // if neighbor cross line get new intersection point
         slope=lineFunc(v_nodes[neighborId],x,y);
         getNewItx(sdSlope,dstX,dstY,slope,x,y,newItxX,newItxY);
+        // case 3: neighbor and current node is on the opposite side but neighbor is on the left side of source dextination line
+        if(neighborSide>=0){
+            q_pkt.pop();
+            packet.modifyInfo(id,neighborId);
+            packet.updateItx(newItxX,newItxY);
+            q_pkt.push(packet);
+            return;
+        }
+        // case 4: if intersection point isn't the newest, than cross the line 
         if((dstX>x && newItxX<=itxX && newItxY<=itxY) || (dstX<x && newItxX>=itxX && newItxY>=itxY)){
             q_pkt.pop();
              packet.modifyInfo(id,neighborId);
