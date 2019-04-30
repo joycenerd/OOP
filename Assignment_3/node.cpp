@@ -93,10 +93,10 @@ void getNewItx(double slope1,double x1,double y1,double slope2,double x2,double 
 
 // case1: if the node is also an intersection point
 void equalToItxCase(vector<Node> &planarGraph,double slope,Node node,Packet &packet,int plSide){
-    int i,vsize,neighborId;
+    int i,vsize,neighborId,lastId;
     double neighborX,neighborY,side,x,y,degree,dstX,dstY;
     vector<pair<int,double>> angle;
-    vsize=planarGraph.size();
+    vsize=planarGraph.size(); 
     for(i=0;i<vsize;i++){
         neighborId=planarGraph[i].getId();
         neighborX=planarGraph[i].getX();
@@ -117,7 +117,7 @@ void equalToItxCase(vector<Node> &planarGraph,double slope,Node node,Packet &pac
 }
 
 // other case: first find the node with smallest angle differnece form current node
-int getSmallestAngle(vector<Node> &planarGraph,double lastX,double lastY,Node node,Packet &packet,int plSide,int vis[]){
+int getSmallestAngle(vector<Node> &planarGraph,double lastX,double lastY,Node node,Packet &packet,int plSide,int vis[],int srcSide){
     double slope,neighborX,neighborY,side,degree,x,y;
     int neighborId,vsize,i,lastId;
     vector<pair<int,double>> angle;
@@ -133,11 +133,15 @@ int getSmallestAngle(vector<Node> &planarGraph,double lastX,double lastY,Node no
         side=slope*(neighborX-x)-(neighborY-y);
         degree=arcCos(x,y,lastX,lastY,neighborX,neighborY);
         if(neighborId==lastId) angle.push_back(make_pair(neighborId,2*M_PI));
-        else if((side<=0 && plSide==1) || (side>=0 && plSide==-1)) angle.push_back(make_pair(neighborId,degree));
-        else angle.push_back(make_pair(neighborId,degree)); 
+        else if(side<=0 && plSide==1 && srcSide==1) angle.push_back(make_pair(neighborId,degree));
+        else if(side>=0 && plSide==-1 && srcSide==-1) angle.push_back(make_pair(neighborId,degree));
+        else angle.push_back(make_pair(neighborId,2*M_PI-degree)); 
     }
     sort(angle.begin(),angle.end(),sortBySec);
-    for(i=0;i<angle.size();i++) printf("%d %f\n",angle[i].first,angle[i].second);
+    for(i=0;i<angle.size();i++){
+        printf("%d %f\n",angle[i].first,angle[i].second);
+        printf("%d %d\n",plSide,srcSide);
+    }
     for(i=0;i<vsize;i++){
         neighborId=angle[i].first;
         if(vis[neighborId]==0) break;
@@ -145,7 +149,7 @@ int getSmallestAngle(vector<Node> &planarGraph,double lastX,double lastY,Node no
     return neighborId;
 }
 
-void Node::getNextHop(vector<Node> &v_nodes,int plSide){
+void Node::getNextHop(vector<Node> &v_nodes,int plSide,int srcSide){
     Packet packet;
     double itxX,itxY,slope,neighborX,neighborY,lastX,lastY,sdSlope;
     double curSide,neighborSide,isSame,newItxX,newItxY;
@@ -157,10 +161,15 @@ void Node::getNextHop(vector<Node> &v_nodes,int plSide){
     itxX=packet.getItxX();
     itxY=packet.getItxY();
     srcId=packet.getSrcId();
+    lastId=packet.getLastId();
+    lastX=v_nodes[lastId].x;
+    lastY=v_nodes[lastId].y;  
     // get source-destination function
     sdSlope=lineFunc(v_nodes[srcId],dstX,dstY);
     if(x==itxX && y==itxY){
-        equalToItxCase(planarGraph,sdSlope,v_nodes[id],packet,plSide);
+        if(lastId!=srcId) slope=lineFunc(v_nodes[lastId],x,y);
+        else slope=sdSlope;
+        equalToItxCase(planarGraph,slope,v_nodes[id],packet,plSide);
         q_pkt.pop();
         q_pkt.push(packet);
         return;
@@ -171,7 +180,7 @@ void Node::getNextHop(vector<Node> &v_nodes,int plSide){
     for(i=0;i<1010;i++) vis[i]=0;
     while(1){
         // find samllest angle
-        neighborId=getSmallestAngle(planarGraph,lastX,lastY,v_nodes[id],packet,plSide,vis);
+        neighborId=getSmallestAngle(planarGraph,lastX,lastY,v_nodes[id],packet,plSide,vis,srcSide);
         neighborX=v_nodes[neighborId].x;
         neighborY=v_nodes[neighborId].y;
         curSide=sdSlope*(x-dstX)-(y-dstY);

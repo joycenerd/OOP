@@ -23,7 +23,7 @@ class Node{
         void addDst(int inDstId,double inDstX,double inDstY);
         void initPkt(Packet packet){q_pkt.push(packet);};
         int checkQueue();
-        void getNextHop(vector<Node> &v_nodes,int plSide);
+        void getNextHop(vector<Node> &v_nodes,int plSide,int srcSide);
         void send(vector<Node> &v_nodes);
 
     private:
