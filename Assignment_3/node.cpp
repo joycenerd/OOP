@@ -112,7 +112,7 @@ void equalToItxCase(vector<Node> &planarGraph,double slope,Node node,Packet &pac
         else angle.push_back(make_pair(neighborId,2*M_PI-degree));
     }
     sort(angle.begin(),angle.end(),sortBySec);
-    for(i=0;i<angle.size();i++) printf("%d %f\n",angle[i].first,angle[i].second);
+    for(i=0;i<angle.size();i++) printf("case1=%d %f\n",angle[i].first,angle[i].second);
     packet.modifyInfo(node.getId(),angle[0].first);
 }
 
@@ -138,9 +138,10 @@ int getSmallestAngle(vector<Node> &planarGraph,double lastX,double lastY,Node no
         else angle.push_back(make_pair(neighborId,2*M_PI-degree)); 
     }
     sort(angle.begin(),angle.end(),sortBySec);
+    printf("angle size=%d\n",angle.size());
     for(i=0;i<angle.size();i++){
-        printf("%d %f\n",angle[i].first,angle[i].second);
-        printf("%d %d\n",plSide,srcSide);
+        printf("case2=%d %f\n",angle[i].first,angle[i].second);
+        //printf("%d %d\n",plSide,srcSide);
     }
     for(i=0;i<vsize;i++){
         neighborId=angle[i].first;
@@ -197,7 +198,7 @@ void Node::getNextHop(vector<Node> &v_nodes,int plSide,int srcSide){
         slope=lineFunc(v_nodes[neighborId],x,y);
         getNewItx(sdSlope,dstX,dstY,slope,x,y,newItxX,newItxY);
         // case 3: neighbor and current node is on the opposite side but neighbor is on the left side of source dextination line
-        if(neighborSide>=0){
+        if((neighborSide>=0 && plSide==1) || (neighborSide<=0 && plSide==-1)){
             q_pkt.pop();
             packet.modifyInfo(id,neighborId);
             packet.updateItx(newItxX,newItxY);

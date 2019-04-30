@@ -101,6 +101,7 @@ int main(int argc, char **argv)
     addNeighbor(v_nodes,vsize);
     // planar graph
     for(i=0;i<vsize;i++) v_nodes[i].planarize();
+    for(i=0;i<vsize;i++) v_nodes[i].printNeighbor();
     fscanf(fin,"%d",&pairs);
     for(i=0;i<pairs;i++){
         fscanf(fin,"%d %d",&srcId,&dstId);
