@@ -33,7 +33,9 @@ void addNeighbor(vector<Node> &v_nodes,int vsize){
             bX=v_nodes[j].getX();
             bY=v_nodes[j].getY();
             distance=sqrt(pow(aX-bX,2)+pow(aY-bY,2));
-            if(distance<=1){
+            //printf("%d %d %f\n",aId,bId,distance);
+            if(distance<=1 || fabs(distance-1)<=0.000001){
+                //printf("%d %d\n",i,j);
                 v_nodes[i].pushNeighbor(v_nodes[j]);
                 v_nodes[j].pushNeighbor(v_nodes[i]);
             }
@@ -74,14 +76,12 @@ void faceRouting(vector<Node> v_nodes,int vsize,int srcId,int dstId,FILE *fout){
            }
        }
        // record packet route
-       fprintf(fout,"%d ",curId);
+       fprintf(fout,"%d\t",curId);
        // end if packet has send to destination
        if(curId==dstId) break;
-       v_nodes[curId].getNextHop(v_nodes,plSide,srcSide);
+       v_nodes[curId].getNextHop(v_nodes);
        v_nodes[curId].send(v_nodes);
-       if(v_nodes[curId].getX()>=v_nodes[srcId].getX()) srcSide=1;
-       else srcSide=-1; 
-       printf("\n");
+       //printf("\n");
    }
    fprintf(fout,"\n");
 }
@@ -99,6 +99,8 @@ int main(int argc, char **argv)
     vsize=v_nodes.size();
     // link nodes with distance<=1
     addNeighbor(v_nodes,vsize);
+    //for(i=0;i<vsize;i++) v_nodes[i].printBeforeNeighbor();
+    printf("\n");
     // planar graph
     for(i=0;i<vsize;i++) v_nodes[i].planarize();
     for(i=0;i<vsize;i++) v_nodes[i].printNeighbor();
