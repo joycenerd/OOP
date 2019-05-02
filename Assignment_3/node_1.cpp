@@ -6,7 +6,9 @@
 #include <cstring>
 #include <iostream>
 #include <vector>
+#define MAX_SLOPE 100000
 using namespace std;
+
 
 void Node::printNeighbor() {
   int vsize = 0, i;
@@ -96,6 +98,7 @@ double lineFunc(Node node, double lastX, double lastY) {
   curY = node.getY();
   double slope;
   slope = (lastY - curY) / (lastX - curX);
+  if(lastX==curX) return MAX_SLOPE; 
   return slope;
 }
 
@@ -125,7 +128,7 @@ void Node::getNextHop(vector<Node> &v_nodes) {
     for (i = 0; i < vsize; i++) {
       nxtX = planarGraph[i].x;
       nxtY = planarGraph[i].y;
-      degree = arcCos(x, y, dstX, dstY, nxtX, nxtY);
+      degree = arcCos(x, y, dstX, dstY, nxtX, nxtY); 
       side = slope * (nxtX - x) - (nxtY - y);
       if (packet.getLastId() == planarGraph[i].id)
         degree = 2 * M_PI;
@@ -196,7 +199,7 @@ void Node::getNextHop(vector<Node> &v_nodes) {
     // if next node cross the source destination line
     // find new intersection point
     slope = lineFunc(*this,nxtX,nxtY);
-    itxX = (-slope * x + y + sdSlope * dstX - dstY) / (sdSlope - slope);
+    if(slope!=MAX_SLOPE) itxX = (-slope * x + y + sdSlope * dstX - dstY) / (sdSlope - slope);
     itxY = sdSlope * (itxX - dstX) + dstY;
     dir=dstX-itxX;
 
