@@ -1,6 +1,6 @@
 CC=g++
-SOURCES=main.cpp 
-OBJECTS=main.o 
+SOURCES=main.cpp rp.cpp
+OBJECTS=main.o rp.o
 TARGET=assignment_4
 
 all: $(TARGET) clean
