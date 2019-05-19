@@ -2,6 +2,7 @@
 #define FR_H
 #include "rp.h"
 #include "gfgpacket.h"
+//#include "gfg.h"
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -24,7 +25,7 @@ class FR: public RP{
         void pushNeighbor(FR node){beforeNeighbor.push_back(node);}
         void planarize();
         void printNeighbor();
-        void getNextHop();
+        void getNextHop(vector<FR> &v_nodes);
     private:
         int id;
         double x;
