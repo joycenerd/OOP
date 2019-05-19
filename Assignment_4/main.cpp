@@ -1,4 +1,5 @@
 #include "rp.h"
+#include "gfgpacket.h"
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
@@ -49,6 +50,17 @@ void routing(vector<RP> v_nodes,int vsize,int srcId,int dstId,FILE *fout){
     srcX=v_nodes[srcId].getX();
     //printf("%f\n%f %f\n",srcX,dstX,dstY);
     for(i=0;i<vsize;i++) v_nodes[i].addDst(dstId,dstX,dstY);
+    // initialize packet and add to the queue of source
+    itxX=v_nodes[srcId].getX();
+    itxY=v_nodes[srcId].getY();
+    GFGpacket packet(srcId,dstId,itxX,itxY);
+    cout << packet.getSrcId() << endl;
+    cout << packet.getDstId() << endl;
+    cout << packet.getItxX() << endl;
+    cout << packet.getItxY() << endl;
+    cout << packet.getLastId() << endl;
+    cout << endl;
+
 }
 
 int main(int argc,char *argv[])
