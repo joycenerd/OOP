@@ -10,8 +10,10 @@ class GFG: public FR{
     public:
         GFG(){}
         GFG(int inId,double inX,double inY):FR(inId,inX,inY){}
-        void getNextHop(vector<FR> &v_nodes);
-
+        void getNextHop(vector<GFG> &v_nodes);
+        void send(vector<GFG> &v_nodes);
+    private:
+        vector<GFG> gfg_nodes;
 };
 
 #endif

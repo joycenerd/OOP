@@ -17,6 +17,7 @@ class Packet{
         int getLastId(){return lastId;};
         void updateItx(double newX,double newY);
         int getSrcId(){return srcId;};
+        void rstSrcId(int newId){srcId=newId;}
             
     private:
         int srcId;

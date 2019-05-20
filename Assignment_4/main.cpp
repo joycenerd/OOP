@@ -7,20 +7,20 @@
 #include <cmath>
 using namespace std;
 
-void inputData(FILE *fin,vector<FR> &v_nodes){
+void inputData(FILE *fin,vector<GFG> &v_nodes){
     int id,i;
     double x,y;
     int numOfNodes;
     fscanf(fin,"%d",&numOfNodes);
     for(i=0;i<numOfNodes;i++){
         fscanf(fin,"%d%lf%lf",&id,&x,&y);
-        FR node(id,x,y);
+        GFG node(id,x,y);
         v_nodes.push_back(node);
     }
 }
 
 // add neightbor if distance <= 1
-void addNeighbor(vector<FR> &v_nodes,int vsize){
+void addNeighbor(vector<GFG> &v_nodes,int vsize){
     int i,j,aId,bId;
     double aX,aY,bX,bY,distance;
     for(i=0;i<vsize;i++){
@@ -42,7 +42,7 @@ void addNeighbor(vector<FR> &v_nodes,int vsize){
     }
 }
 
-void routing(vector<FR> v_nodes,int vsize,int srcId,int dstId,FILE *fout){
+void routing(vector<GFG> v_nodes,int vsize,int srcId,int dstId,FILE *fout){
     double itxX,itxY,slope,dstX,dstY,srcX;
     int i,curId,isMine,lastId;
     dstX=v_nodes[dstId].getX();
@@ -66,7 +66,9 @@ void routing(vector<FR> v_nodes,int vsize,int srcId,int dstId,FILE *fout){
         //break;
         if(curId==dstId) break;
         v_nodes[curId].getNextHop(v_nodes);
+        v_nodes[curId].send(v_nodes);
     }
+    fprintf(fout,"\n");
 }
 
 int main(int argc,char *argv[])
@@ -75,7 +77,7 @@ int main(int argc,char *argv[])
     FILE *fout=fopen("./result.txt","w");
     int numOfNodes,id,i,vsize,srcId,dstId,pairs;
     double x,y;
-    vector<FR>v_nodes;
+    vector<GFG>v_nodes;
     v_nodes.reserve(1010);
     inputData(fin,v_nodes);
     vsize=v_nodes.size();
