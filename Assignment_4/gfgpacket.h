@@ -11,7 +11,7 @@ class GFGpacket:public Packet{
         int getMode(){return mode;}
         void rstSrcId(int newId){};
         double getDist(){return minDist;}
-        void rstDist(int mini){minDist=mini;}
+        void rstDist(double mini){minDist=mini;}
         void setmod(int newmod){mode=newmod;}
     private:
         int mode;

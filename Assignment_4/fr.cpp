@@ -217,7 +217,7 @@ void FR::getNextHop(vector<FR> &v_nodes){
       packet.modifyInfo(id, nxtId);
       q_pkt.pop();
       q_pkt.push(packet);
-      printf("case4");
+      printf("case4\n");
       return;
     }
     // case5: if stay at current node than use itersection point as last node and calculate again
